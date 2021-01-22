@@ -1,0 +1,79 @@
+procedure TFprincipal.dataMask(Sender: TObject; var Key: Char);
+var
+  texto1:String;
+  letra:Char;
+  I: Integer;
+  data:TDate;
+begin
+ if Key in ['0'..'9'] then
+  begin
+    if not (Length(TEdit(Sender).Text) >= 11) then
+      begin
+        letra:= Key;
+        Key:=#0;
+        texto1:= TEdit(Sender).Text;
+        for I := 1 to Length(texto1) do
+          begin
+            if texto1[I] = ' ' then
+              begin
+                texto1[I]:= letra;
+                Break;
+              end;
+            if I = 9 then
+              begin
+                try
+                  data:= StrToDate(texto1);
+                except
+                  case MessageDlg('Data inválida', mtError, [mbOk], 0) of
+                    mrOk:
+                      begin
+                        texto1:= '  /  /    ';
+                        Break;
+                      end;
+                  end;
+                end;
+              end;
+          end;
+      end;
+    TEdit(Sender).Text:= texto1;
+  end
+ else if Key in [#8] then
+  begin
+    Key:= #0;
+    texto1:= TEdit(Sender).Text;
+    if texto1.IsEmpty then
+      begin
+        texto1:= '  /  /    ';
+      end;
+    for I := 1 to Length(texto1) do
+      begin
+        if texto1[I] = ' ' then
+          begin
+            if I > 1 then
+              begin
+                if not ((I-1) = 3) AND not ((I-1) = 6) then
+                  begin
+                    texto1[I-1]:= ' ';
+                  end
+                else
+                  begin
+                    texto1[I-2]:= ' ';
+                  end;
+              end
+            else
+              begin
+                texto1:= '  /  /    ';
+              end;
+          end
+        else if I = Length(texto1) then
+          begin
+            texto1[I]:= ' ';
+          end
+      end;
+    TEdit(Sender).Text:= texto1;
+  end
+ else
+  begin
+    Key:=#0;
+  end;
+end;
